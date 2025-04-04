@@ -4,10 +4,16 @@ import * as gcp from "@pulumi/gcp";
 
 const name = "coilysiren-deploy";
 
-// Create a GKE cluster
+// Create a GKE cluster without the default node pool
 const cluster = new gcp.container.Cluster(name, {
   initialNodeCount: 1,
   removeDefaultNodePool: true,
+});
+
+// Explicitly create a node pool
+const nodePool = new gcp.container.NodePool(`${name}-nodepool`, {
+  cluster: cluster.name,
+  nodeCount: 1,
   nodeConfig: {
     machineType: "e2-standard-2",
     oauthScopes: [
@@ -57,3 +63,74 @@ users:
 const clusterProvider = new k8s.Provider(name, {
   kubeconfig: kubeconfig,
 });
+
+// Create a Kubernetes Namespace
+const namespace = new k8s.core.v1.Namespace(
+  name,
+  {},
+  { provider: clusterProvider }
+);
+
+// Export the Namespace name
+export const namespaceName = namespace.metadata.apply((meta) => meta.name);
+
+// Create a NGINX Deployment
+const appLabels = { appClass: name };
+const deployment = new k8s.apps.v1.Deployment(
+  name,
+  {
+    metadata: {
+      namespace: namespaceName,
+      labels: appLabels,
+    },
+    spec: {
+      replicas: 1,
+      selector: { matchLabels: appLabels },
+      template: {
+        metadata: {
+          labels: appLabels,
+        },
+        spec: {
+          containers: [
+            {
+              name: name,
+              image: "nginx:latest",
+              ports: [{ name: "http", containerPort: 80 }],
+            },
+          ],
+        },
+      },
+    },
+  },
+  {
+    provider: clusterProvider,
+  }
+);
+
+// Export the Deployment name
+export const deploymentName = deployment.metadata.apply((m) => m.name);
+
+// Create a LoadBalancer Service for the NGINX Deployment
+const service = new k8s.core.v1.Service(
+  name,
+  {
+    metadata: {
+      labels: appLabels,
+      namespace: namespaceName,
+    },
+    spec: {
+      type: "LoadBalancer",
+      ports: [{ port: 80, targetPort: "http" }],
+      selector: appLabels,
+    },
+  },
+  {
+    provider: clusterProvider,
+  }
+);
+
+// Export the Service name and public LoadBalancer endpoint
+export const serviceName = service.metadata.apply((m) => m.name);
+export const servicePublicIP = service.status.apply(
+  (status) => status.loadBalancer.ingress[0].ip
+);

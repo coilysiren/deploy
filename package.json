@@ -1,13 +1,13 @@
 {
-    "name": "deploy",
-    "main": "index.ts",
-    "devDependencies": {
-        "@types/node": "^18",
-        "typescript": "^5.0.0"
-    },
-    "dependencies": {
-        "@pulumi/gcp": "^8.25.0",
-        "@pulumi/kubernetes": "^4.22.1",
-        "@pulumi/pulumi": "^3.160.0"
-    }
+  "name": "deploy",
+  "main": "index.ts",
+  "devDependencies": {
+    "@types/node": "^18",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@pulumi/gcp": "^8.25.0",
+    "@pulumi/kubernetes": "^4.22.1",
+    "@pulumi/pulumi": "^3.160.0"
+  }
 }
