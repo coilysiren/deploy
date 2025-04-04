@@ -1,1 +1,5 @@
-node_modules/
+/bin/
+/node_modules/
+
+# environment specific pulumi files
+Pulumi.*.yaml
