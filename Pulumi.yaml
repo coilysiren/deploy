@@ -1,5 +1,4 @@
 name: deploy
-description: deployment for python API + react frontend, via pulumi and typescript
 backend:
   url: gs://coilysiren-delpoy-pulumi-state
 runtime:
