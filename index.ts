@@ -20,6 +20,12 @@ export = async () => {
     project: pulumi.interpolate`${account.project}`,
   });
 
+  new gcp.projects.IAMBinding("default-node-service-account", {
+    members: [pulumi.interpolate`serviceAccount:${account.email}`],
+    role: "roles/container.defaultNodeServiceAccount",
+    project: pulumi.interpolate`${account.project}`,
+  });
+
   // Create a GKE cluster without the default node pool
   const cluster = new gcp.container.Cluster(name, {
     initialNodeCount: 1,
