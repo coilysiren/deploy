@@ -1,6 +1,6 @@
 name: deploy
 backend:
-  url: gs://coilysiren-delpoy-pulumi-state
+  url: gs://coilysiren-deploy-pulumi-state
 runtime:
   name: nodejs
   options:
