@@ -14,14 +14,14 @@ export = async () => {
     displayName: "Kubernetes General Purpose Service Account",
   });
 
-  new gcp.projects.IAMBinding("artifact-registry-reader-binding", {
-    members: [pulumi.interpolate`serviceAccount:${account.email}`],
+  new gcp.projects.IAMMember("artifact-registry-reader-binding", {
+    member: pulumi.interpolate`serviceAccount:${account.email}`,
     role: "roles/artifactregistry.reader",
     project: pulumi.interpolate`${account.project}`,
   });
 
-  new gcp.projects.IAMBinding("default-node-service-account", {
-    members: [pulumi.interpolate`serviceAccount:${account.email}`],
+  new gcp.projects.IAMMember("default-node-service-account", {
+    member: pulumi.interpolate`serviceAccount:${account.email}`,
     role: "roles/container.defaultNodeServiceAccount",
     project: pulumi.interpolate`${account.project}`,
   });

@@ -1,8 +1,11 @@
+DEFAULT_GOAL := help
+.PHONY: deploy
+
 help:
 	@awk '/^## / \
 		{ if (c) {print c}; c=substr($$0, 4); next } \
 			c && /(^[[:alpha:]][[:alnum:]_-]+:)/ \
-		{print $$1, "\t", c; c=0} \
+		{printf "%-30s %s\n", $$1, c; c=0} \
 			END { print c }' $(MAKEFILE_LIST)
 
 .deploy-pulumi:
